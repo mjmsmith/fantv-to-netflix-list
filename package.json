@@ -1,0 +1,24 @@
+{
+  "name": "fan-netflix-mylist",
+  "version": "0.1.0",
+  "description": "Update Netflix My List queue from Fan TV watch list.",
+  "homepage": "https://github.com/mjmsmith/fantv-to-netflix-queue",
+  "author": {
+    "name": "Mark Smith",
+    "email": "mark@camazotz.com"
+  },
+  "dependencies": {
+    "jquery": "~1.8.3",
+    "request": "~2.30.0",
+    "when": "~2.7.0"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mjmsmith/fantv-to-netflix-queue.git"
+  },
+  "scripts": {
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
