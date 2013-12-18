@@ -1,6 +1,6 @@
 # fantv-to-netflix-queue
 
-Script to update a Netflix My List queue from a Fan TV watch list.
+Script to update a Netflix My List from a Fan TV watch list.
 
 ## Installation
 
