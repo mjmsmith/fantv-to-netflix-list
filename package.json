@@ -18,6 +18,7 @@
     "url": "git://github.com/mjmsmith/fantv-to-netflix-queue.git"
   },
   "scripts": {
+    "start": "node index.js"
   },
   "license": "MIT",
   "readmeFilename": "README.md"
