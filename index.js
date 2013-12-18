@@ -7,10 +7,10 @@ var when = require("when");
 var unfold = require("when/unfold");
 var delay = require("when/delay");
 
-var fantvEmail = "<edit@me>";
-var fantvPassword = "<edit me>";
-var netflixEmail = "<edit@me>";
-var netflixPassword = "<edit me>";
+var fantvEmail = "edit@me";
+var fantvPassword = "edit me";
+var netflixEmail = "edit@me";
+var netflixPassword = "edit me";
 
 var fantvJar = request.jar();
 var netflixJar = request.jar();
