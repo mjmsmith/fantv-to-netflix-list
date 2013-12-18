@@ -25,7 +25,7 @@ var netflixEmail = "edit@me";
 var netflixPassword = "edit me";
 ```
 
-Run ```npm start``` to execute the script.
+Run ```node .``` to execute the script.
 
 ## License
 
