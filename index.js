@@ -136,15 +136,14 @@ function loginToNetflix(auth) {
 }
 
 function getNetflixAddUrls() {
-  var deferreds = [];
+  log("Updating NetFlix list.");
 
-  for (var id in netflixMovieIds) {
-    if (netflixMovieIds.hasOwnProperty(id)) {
-      deferreds.push(delay(2000, getNetflixAddUrl(id, netflixMovieIds[id])));
-    }
-  }
+  var ids = Object.keys(netflixMovieIds);
 
-  return when.all(deferreds);
+  return unfold(function(i) { return [ids[i], (i + 1)]; },
+                function(i) { return i >= ids.length; },
+                function(id) { return delay(1000, getNetflixAddUrl(id, netflixMovieIds[id])); },
+                0);
 }
 
 function getNetflixAddUrl(id, title) {
@@ -179,15 +178,12 @@ function getNetflixAddUrl(id, title) {
 }
 
 function addMoviesToNetflix() {
-  var deferreds = [];
+  var urls = Object.keys(netflixAddUrls);
 
-  for (var url in netflixAddUrls) {
-    if (netflixAddUrls.hasOwnProperty(url)) {
-      deferreds.push(delay(2000, addMovieToNetflix(url, netflixAddUrls[url])));
-    }
-  }
-
-  return when.all(deferreds);
+  return unfold(function(i) { return [urls[i], (i + 1)]; },
+                function(i) { return i >= urls.length; },
+                function(url) { return delay(1000, addMovieToNetflix(url, netflixAddUrls[url])); },
+                0);
 }
 
 function addMovieToNetflix(url, title) {
@@ -206,7 +202,7 @@ function addMovieToNetflix(url, title) {
 }
 
 function onFinished() {
-  log(addedCount + " movie" + (addedCount === 1 ? "" : "s") + " added to Netflix queue.");
+  log(addedCount + " movie" + (addedCount === 1 ? "" : "s") + " added to Netflix list.");
 }
 
 function onFailed(err) {
