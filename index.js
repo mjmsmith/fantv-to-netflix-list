@@ -12,10 +12,11 @@ var fantvPassword = "<edit me>";
 var netflixEmail = "<edit@me>";
 var netflixPassword = "<edit me>";
 
-var fanJar = request.jar();
+var fantvJar = request.jar();
 var netflixJar = request.jar();
 var netflixMovieIds = {};
 var netflixAddUrls = {};
+var addedCount = 0;
 
 loginToFan()
 .then(getFanWatchList)
@@ -23,7 +24,7 @@ loginToFan()
 .then(loginToNetflix)
 .then(getNetflixAddUrls)
 .then(addMoviesToNetflix)
-.done();
+.done(onFinished, onFailed);
 
 function loginToFan() {
   log("Logging into Fan TV.");
@@ -34,7 +35,7 @@ function loginToFan() {
       email: fantvEmail,
       password: fantvPassword
     },
-    jar: fanJar
+    jar: fantvJar
   });
   var url = "https://www.fan.tv/authenticate?xhr_request=1";
 
@@ -57,7 +58,7 @@ function getFanWatchListPage(id, page) {
   log("Getting Fan TV watch list page " + page + ".");
 
   var deferred = when.defer();
-  var req = request.defaults({ jar: fanJar });
+  var req = request.defaults({ jar: fantvJar });
   var url = "http://www.fan.tv/user/" + id + "/lists/watch-list/movies";
 
   if (page > 1) {
@@ -165,7 +166,7 @@ function getNetflixAddUrl(id, title) {
       netflixAddUrls[addUrl] = title;
     }
     else if (removeUrl) {
-      log(title + " in Netflix queue.");
+      log("  " + title);
     }
     else {
       throw "Could not find AddToQueue or QueueDelete URL for " +  title + ".";
@@ -190,17 +191,26 @@ function addMoviesToNetflix() {
 }
 
 function addMovieToNetflix(url, title) {
-  log("Adding " + title + " to Netflix queue.");
+  log("+ " + title);
 
    var deferred = when.defer();
    var req = request.defaults({ jar: netflixJar });
 
   req.get(url, function(err, res) {
     checkResponseStatus(url, err, res, 200);
+    ++addedCount;
     deferred.resolve();
   });
 
   return deferred.promise;
+}
+
+function onFinished() {
+  log(addedCount + " movie" + (addedCount === 1 ? "" : "s") + " added to Netflix queue.");
+}
+
+function onFailed(err) {
+  log(err);
 }
 
 function checkResponseStatus(url, err, res, expectedCode) {
