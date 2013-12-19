@@ -77,7 +77,7 @@ function getFanWatchListPage(id, page) {
 
     $(".list-item.movie", html).each(function(i, el) {
       var title = $("a > .list-item-title > h5", el).text().trim();
-      var url = $(".mini > a[data-source='netflix-stream']", el).attr("href");
+      var url = $(".mini > a[href*='movies.netflix.com']", el).attr("href");
 
       if (title && url) {
         var id = url.match(/\/WiMovie\/([0-9]+)/)[1];
