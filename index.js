@@ -40,8 +40,13 @@ function loginToFan() {
   var url = "https://www.fan.tv/authenticate?xhr_request=1";
 
   req.post(url, function(err, res, body) {
-    checkResponseStatus(url, err, res, 200);
-    deferred.resolve(JSON.parse(body).public_id);
+    try {
+      checkResponseStatus(url, err, res, 200);
+      deferred.resolve(JSON.parse(body).public_id);
+    }
+    catch (ex) {
+      deferred.reject(ex);
+    }
   });
 
   return deferred.promise;
@@ -66,28 +71,33 @@ function getFanWatchListPage(id, page) {
   }
 
   req.get(url, function(err, res, body) {
-    checkResponseStatus(url, err, res, 200);
-
-    if (page > 1) {
-      body = "<!DOCTYPE html>\n<html lang=\"en-US\"><body>" + body + "</body></html>";
-    }
-
-    var html = $.parseHTML(body);
-    var count = 0;
-
-    $(".list-item.movie", html).each(function(i, el) {
-      var title = $("a > .list-item-title > h5", el).text().trim();
-      var url = $(".mini > a[href*='movies.netflix.com']", el).attr("href");
-
-      if (title && url) {
-        var id = url.match(/\/WiMovie\/([0-9]+)/)[1];
-        netflixMovieIds[id] = title;
+    try {
+      checkResponseStatus(url, err, res, 200);
+  
+      if (page > 1) {
+        body = "<!DOCTYPE html>\n<html lang=\"en-US\"><body>" + body + "</body></html>";
       }
-
-      ++count;
-    });
-
-    deferred.resolve(count === 0 ? 0 : (page + 1));
+  
+      var html = $.parseHTML(body);
+      var count = 0;
+  
+      $(".list-item.movie", html).each(function(i, el) {
+        var title = $("a > .list-item-title > h5", el).text().trim();
+        var url = $(".mini > a[href*='movies.netflix.com']", el).attr("href");
+  
+        if (title && url) {
+          var id = url.match(/\/WiMovie\/([0-9]+)/)[1];
+          netflixMovieIds[id] = title;
+        }
+  
+        ++count;
+      });
+  
+      deferred.resolve(count === 0 ? 0 : (page + 1));
+    }
+    catch (ex) {
+      deferred.reject(ex);
+    }
   });
 
   return deferred.promise;
@@ -101,12 +111,17 @@ function getNetflixLoginPage() {
   var url = "https://signup.netflix.com/Login";
 
   req.get(url, function(err, res, body) {
-    checkResponseStatus(url, err, res, 200);
-
-    var html = $.parseHTML(body);
-    var auth = $("form#login-form > input[name='authURL']", html).attr("value");
-
-    deferred.resolve(auth);
+    try {
+      checkResponseStatus(url, err, res, 200);
+  
+      var html = $.parseHTML(body);
+      var auth = $("form#login-form > input[name='authURL']", html).attr("value");
+  
+      deferred.resolve(auth);
+    }
+    catch (ex) {
+      deferred.reject(ex);
+    }
   });
 
   return deferred.promise;
@@ -128,8 +143,13 @@ function loginToNetflix(auth) {
   var url = "https://signup.netflix.com/Login";
 
   req.post(url, function(err, res) {
-    checkResponseStatus(url, err, res, 302);
-    deferred.resolve();
+    try {
+      checkResponseStatus(url, err, res, 302);
+      deferred.resolve();
+    }
+    catch (ex) {
+      deferred.reject(ex);
+    }
   });
 
   return deferred.promise;
@@ -155,23 +175,28 @@ function getNetflixAddUrl(id, title) {
   var url = "http://movies.netflix.com/WiMovie/" + id;
 
   req.get(url, function(err, res, body) {
-    checkResponseStatus(url, err, res, 200);
-
-    var html = $.parseHTML(body);
-    var addUrl = $("#displaypage-overview-details > .actions a[href*='/AddToQueue']", html).attr("href");
-    var removeUrl = $("#displaypage-overview-details > .actions a[href*='/QueueDelete']", html).attr("href");
-
-    if (addUrl) {
-      netflixAddUrls[addUrl] = title;
+    try {
+      checkResponseStatus(url, err, res, 200);
+  
+      var html = $.parseHTML(body);
+      var addUrl = $("#displaypage-overview-details > .actions a[href*='/AddToQueue']", html).attr("href");
+      var removeUrl = $("#displaypage-overview-details > .actions a[href*='/QueueDelete']", html).attr("href");
+  
+      if (addUrl) {
+        netflixAddUrls[addUrl] = title;
+      }
+      else if (removeUrl) {
+        log("  " + title);
+      }
+      else {
+        throw "Could not find AddToQueue or QueueDelete URL for " +  title + ".";
+      }
+  
+      deferred.resolve();
     }
-    else if (removeUrl) {
-      log("  " + title);
+    catch (ex) {
+      deferred.reject(ex);
     }
-    else {
-      throw "Could not find AddToQueue or QueueDelete URL for " +  title + ".";
-    }
-
-    deferred.resolve();
   });
 
   return deferred.promise;
@@ -193,9 +218,14 @@ function addMovieToNetflix(url, title) {
    var req = request.defaults({ jar: netflixJar });
 
   req.get(url, function(err, res) {
-    checkResponseStatus(url, err, res, 200);
-    ++addedCount;
-    deferred.resolve();
+    try {
+      checkResponseStatus(url, err, res, 200);
+      ++addedCount;
+      deferred.resolve();
+    }
+    catch (ex) {
+      deferred.reject(ex);
+    }
   });
 
   return deferred.promise;
@@ -206,7 +236,7 @@ function onFinished() {
 }
 
 function onFailed(err) {
-  log(err);
+  log("Error:\n" + err);
 }
 
 function checkResponseStatus(url, err, res, expectedCode) {
