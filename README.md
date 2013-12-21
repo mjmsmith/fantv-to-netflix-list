@@ -19,7 +19,7 @@ Run ```npm install``` to install dependencies.
 Open ```index.js``` and edit the Fan TV and Netflix account settings:
 
 ```
-var fantvEmail = "edit@me>";
+var fantvEmail = "edit@me";
 var fantvPassword = "edit me";
 var netflixEmail = "edit@me";
 var netflixPassword = "edit me";
