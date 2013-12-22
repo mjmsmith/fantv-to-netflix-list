@@ -18,6 +18,8 @@ var netflixMovieIds = {};
 var netflixAddUrls = {};
 var addedCount = 0;
 
+log(new Date());
+
 loginToFan()
 .then(getFanWatchList)
 .then(getNetflixLoginPage)
@@ -187,9 +189,6 @@ function getNetflixAddUrl(id, title) {
       }
       else if (removeUrl) {
         log("  " + title);
-      }
-      else {
-        throw "Could not find AddToQueue or QueueDelete URL for " +  title + ".";
       }
   
       deferred.resolve();
